@@ -4,9 +4,6 @@ import { join } from "node:path";
 app.on("ready", async () => {
     const win = new BrowserWindow({
         frame: false,
-        webPreferences: {
-            preload: join(__dirname, "../preload/index.js"),
-        },
         width: 900,
         height: 600,
         show: false,
