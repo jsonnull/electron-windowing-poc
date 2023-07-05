@@ -5,11 +5,23 @@ import { FakeWindow } from './components/FakeWindow';
 import { Tooltip } from './components/Tooltip';
 import "./index.css";
 
+declare global {
+    interface Window {
+        electronAPI: {
+            createWindow: () => void;
+        }
+    }
+}
+
 function App() {
     return (
         <TooltipProvider>
             <FakeWindow>
-                <Tooltip content="Wow!">Hover me</Tooltip>
+                <div className="mr-auto">
+                    <Tooltip content="Wow!">Hover me</Tooltip>
+                </div>
+
+                <button className="bg-slate-100 hover:bg-slate-200 text-slate-900 hover:text-slate-800 rounded px-4 py-2 mr-auto" onClick={() => window.electronAPI.createWindow()}>Create Window</button>
             </FakeWindow>
         </TooltipProvider>
     );

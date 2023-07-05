@@ -1,18 +1,16 @@
-import { BrowserWindow, app, shell, screen } from "electron";
+import { BrowserWindow, app, shell, screen, ipcMain } from "electron";
 import { join } from "node:path";
 
-app.on("ready", async () => {
+const createWindow = () => {
     const win = new BrowserWindow({
         frame: false,
         width: 900,
         height: 600,
         show: false,
         transparent: true,
-    });
-
-    win.webContents.setWindowOpenHandler((details) => {
-        shell.openExternal(details.url);
-        return { action: "deny" };
+        webPreferences: {
+            preload: join(__dirname, "../preload/index.js"),
+        }
     });
 
     if (!app.isPackaged && process.env["ELECTRON_RENDERER_URL"]) {
@@ -26,6 +24,10 @@ app.on("ready", async () => {
     });
 
     const interval = setInterval(() => {
+        if (win.isDestroyed()) {
+            clearInterval(interval);
+            return;
+        }
         const point = screen.getCursorScreenPoint();
         const [x, y] = win.getPosition();
         const [w, h] = win.getSize();
@@ -53,4 +55,16 @@ app.on("ready", async () => {
     win.on("close", () => {
         clearInterval(interval);
     });
+}
+
+app.on("ready", async () => {
+    createWindow();
+
+    ipcMain.on('create-window', () => {
+        createWindow();
+    });
+
+    app.on('window-all-closed', () => {
+        app.quit();
+    })
 });

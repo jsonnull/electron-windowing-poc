@@ -5,6 +5,8 @@ export default defineConfig({
     main: {
         plugins: [externalizeDepsPlugin()],
     },
+    preload: {
+    },
     renderer: {
         plugins: [react()]
     }
